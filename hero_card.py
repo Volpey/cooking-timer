@@ -3,49 +3,20 @@ import flet as ft
 
 class TimerRing:
     def __init__(self, timer_text, timer_status):
-        self.glow_outer = ft.Container(
-            width=290,
-            height=290,
-            border_radius=999,
-            bgcolor="#148B5CF6",
+        self.progress = ft.ProgressRing(
+            width=250,
+            height=250,
+            stroke_width=9,
+            value=1.0,
+            color="#A855F7",
+            bgcolor="#243044",
         )
 
-        self.glow_inner = ft.Container(
-            width=260,
-            height=260,
+        self.glow = ft.Container(
+            width=270,
+            height=270,
             border_radius=999,
-            bgcolor="#18EC4899",
-        )
-
-        self.ring = ft.Container(
-            width=235,
-            height=235,
-            border_radius=999,
-            border=ft.border.all(8, "#A855F7"),
-            shadow=ft.BoxShadow(
-                blur_radius=65,
-                spread_radius=3,
-                color="#668B5CF6",
-                offset=ft.Offset(0, 0),
-            ),
-            alignment=ft.alignment.center,
-            content=ft.Container(
-                width=200,
-                height=200,
-                border_radius=999,
-                bgcolor="#0B1020",
-                alignment=ft.alignment.center,
-                content=ft.Column(
-                    controls=[
-                        ft.Text("🔥", size=24, color="#F87171"),
-                        timer_text,
-                        timer_status,
-                    ],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=6,
-                ),
-            ),
+            bgcolor="#168B5CF6",
         )
 
         self.control = ft.Container(
@@ -54,52 +25,48 @@ class TimerRing:
             alignment=ft.alignment.center,
             content=ft.Stack(
                 controls=[
-                    self.glow_outer,
-                    self.glow_inner,
-                    self.ring,
+                    self.glow,
+                    self.progress,
+                    ft.Container(
+                        width=215,
+                        height=215,
+                        border_radius=999,
+                        bgcolor="#0B1020",
+                        alignment=ft.alignment.center,
+                        content=ft.Column(
+                            controls=[
+                                ft.Text("🔥", size=24, color="#F87171"),
+                                timer_text,
+                                timer_status,
+                            ],
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=6,
+                        ),
+                    ),
                 ],
                 alignment=ft.alignment.center,
             ),
         )
 
     def set_idle(self):
-        self.glow_outer.width = 290
-        self.glow_outer.height = 290
-        self.glow_outer.bgcolor = "#148B5CF6"
+        self.progress.value = 1.0
+        self.progress.color = "#A855F7"
+        self.glow.bgcolor = "#168B5CF6"
 
-        self.glow_inner.width = 260
-        self.glow_inner.height = 260
-        self.glow_inner.bgcolor = "#18EC4899"
+    def set_running(self, progress):
+        self.progress.value = progress
+        self.progress.color = "#A855F7"
+        self.glow.bgcolor = "#168B5CF6"
 
-        self.ring.width = 235
-        self.ring.height = 235
-        self.ring.border = ft.border.all(8, "#A855F7")
+    def set_done(self):
+        self.progress.value = 0.0
+        self.progress.color = "#22C55E"
+        self.glow.bgcolor = "#1622C55E"
 
-    def set_pulse(self, active):
-        if active:
-            self.glow_outer.width = 305
-            self.glow_outer.height = 305
-            self.glow_outer.bgcolor = "#228B5CF6"
-
-            self.glow_inner.width = 275
-            self.glow_inner.height = 275
-            self.glow_inner.bgcolor = "#28EC4899"
-
-            self.ring.width = 242
-            self.ring.height = 242
-            self.ring.border = ft.border.all(9, "#EC4899")
-        else:
-            self.glow_outer.width = 290
-            self.glow_outer.height = 290
-            self.glow_outer.bgcolor = "#148B5CF6"
-
-            self.glow_inner.width = 260
-            self.glow_inner.height = 260
-            self.glow_inner.bgcolor = "#18EC4899"
-
-            self.ring.width = 235
-            self.ring.height = 235
-            self.ring.border = ft.border.all(8, "#A855F7")
+    def set_stopped(self):
+        self.progress.color = "#94A3B8"
+        self.glow.bgcolor = "#1094A3B8"
 
 
 def info_box(icon, main_text, sub_text):
