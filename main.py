@@ -25,7 +25,7 @@ from recipes_page import create_recipes_page
 
 def main(page: ft.Page):
     page.title = "CookFlow"
-    page.window.width = 1600
+    page.window.width = 1686
     page.window.height = 1000
     page.window.resizable = True
     page.theme_mode = ft.ThemeMode.DARK
@@ -243,7 +243,10 @@ def main(page: ft.Page):
         timer_ring,
     )
 
-    suggestions_title, suggestion_cards = create_suggestions(select_recipe)
+    suggestions_title, suggestion_cards = create_suggestions(
+        select_recipe,
+        RECIPES,
+    )
 
     timer_page_content = ft.Column(
         controls=[
@@ -265,8 +268,8 @@ def main(page: ft.Page):
                 timer_page_content,
                 ft.Container(
                     content=autocomplete_box,
-                    top=146,
-                    left=0,
+                    top=170,
+                    left=350,
                 ),
             ],
         ),
