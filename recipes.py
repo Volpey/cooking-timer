@@ -39,6 +39,5 @@ RECIPES = {
     "brokkoli": Recipe("Brokkoli", 8, None),
     "blumenkohl": Recipe("Blumenkohl", 10, None),
     "spargel": Recipe("Spargel", 15, None),
-    "spaghetti bolognese": Recipe("Spaghetti Bolognese", 20, None),
     "hot dogs": Recipe("Hot Dogs", 8, None)
 }
