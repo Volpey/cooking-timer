@@ -3,16 +3,28 @@ import asyncio
 
 
 class TimerManager:
-    def __init__(self, page, timer_text, timer_status, start_button, stop_button):
+    def __init__(
+        self,
+        page,
+        timer_text,
+        timer_status,
+        start_button,
+        stop_button,
+        timer_ring,
+    ):
         self.page = page
         self.timer_text = timer_text
         self.timer_status = timer_status
         self.start_button = start_button
         self.stop_button = stop_button
+        self.timer_ring = timer_ring
         self.running = False
 
     def start(self, recipe):
         if recipe is None:
+            return
+
+        if self.running:
             return
 
         self.running = True
@@ -20,21 +32,29 @@ class TimerManager:
         total_seconds = recipe.cooking_time * 60
         start_time = time.time()
 
-        self.timer_status.value = "Cooking..."
-        self.start_button.bgcolor = "#374151"
-        self.stop_button.bgcolor = "#DC2626"
-        self.page.update()
+        self.timer_status.value = "🔥 Cooking..."
+        self.start_button.bgcolor = "#334155"
+        self.stop_button.bgcolor = "#EF4444"
 
+        self.page.update()
         self.page.run_task(self.update_timer, total_seconds, start_time)
 
     def stop(self):
+        if not self.running:
+            return
+
         self.running = False
-        self.timer_status.value = "Stopped"
+
+        self.timer_status.value = "Paused"
         self.start_button.bgcolor = "#FFFFFF"
         self.stop_button.bgcolor = "#374151"
+        self.timer_ring.set_idle()
+
         self.page.update()
 
     async def update_timer(self, total_seconds, start_time):
+        pulse = False
+
         while self.running:
             elapsed = time.time() - start_time
             progress = elapsed / total_seconds
@@ -42,9 +62,10 @@ class TimerManager:
             if progress >= 1:
                 self.running = False
                 self.timer_text.value = "00:00"
-                self.timer_status.value = "Done"
+                self.timer_status.value = "✅ Done"
                 self.start_button.bgcolor = "#FFFFFF"
                 self.stop_button.bgcolor = "#374151"
+                self.timer_ring.set_idle()
                 self.page.update()
                 return
 
@@ -52,8 +73,17 @@ class TimerManager:
             minutes = remaining // 60
             seconds = remaining % 60
 
+            pulse = not pulse
+
             self.timer_text.value = f"{minutes:02d}:{seconds:02d}"
-            self.timer_status.value = "Cooking..."
+
+            if pulse:
+                self.timer_status.value = "🔥 Cooking"
+            else:
+                self.timer_status.value = "🔥 Cooking."
+
+            self.timer_ring.set_pulse(pulse)
+
             self.page.update()
 
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)

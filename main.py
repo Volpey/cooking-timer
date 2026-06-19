@@ -8,7 +8,10 @@ from helpers import (
 
 from sidebar import create_sidebar
 from timer import TimerManager
-from hero_card import create_hero_card
+from hero_card import (
+    create_hero_card,
+    TimerRing,
+)
 
 from buttons import (
     create_start_button,
@@ -50,6 +53,11 @@ def main(page: ft.Page):
         "Ready to start",
         size=15,
         color="#9CA3AF",
+    )
+
+    timer_ring = TimerRing(
+        timer_text,
+        timer_status,
     )
 
     time_info = ft.Text(
@@ -102,6 +110,7 @@ def main(page: ft.Page):
         timer_status,
         start_button,
         stop_button,
+        timer_ring,
     )
 
     def hide_autocomplete():
@@ -135,6 +144,7 @@ def main(page: ft.Page):
 
         start_button.bgcolor = "#FFFFFF"
         stop_button.bgcolor = "#374151"
+        timer_ring.set_idle()
 
         hide_autocomplete()
         page.update()
@@ -239,6 +249,7 @@ def main(page: ft.Page):
         start_button,
         stop_button,
         recipe_image,
+        timer_ring,
     )
 
     suggestions_title, suggestion_cards = (
