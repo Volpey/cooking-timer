@@ -88,26 +88,32 @@ def create_hero_card(
     stop_button,
     recipe_image,
 ):
-    recipe_info = ft.Column(
-        controls=[
-            ft.Container(
-                content=ft.Text(
-                    "CURRENT RECIPE",
-                    size=12,
-                    color="#E9D5FF",
-                    weight=ft.FontWeight.BOLD,
+    recipe_info = ft.Container(
+        width=260,
+        content=ft.Column(
+            controls=[
+                ft.Container(
+                    content=ft.Text(
+                        "CURRENT RECIPE",
+                        size=12,
+                        color="#E9D5FF",
+                        weight=ft.FontWeight.BOLD,
+                    ),
+                    padding=ft.padding.symmetric(horizontal=14, vertical=8),
+                    border_radius=999,
+                    bgcolor="#306D28D9",
                 ),
-                padding=ft.padding.symmetric(horizontal=14, vertical=8),
-                border_radius=999,
-                bgcolor="#306D28D9",
-            ),
-            recipe_title,
-            ft.Container(height=8),
-            ft.Divider(color="#243044"),
-            info_box("⏱", time_info, "Cooking time"),
-            info_box("🌡", temp_info, "Temperature"),
-        ],
-        spacing=14,
+                ft.Container(
+                    width=260,
+                    content=recipe_title,
+                ),
+                ft.Container(height=8),
+                ft.Divider(color="#243044"),
+                info_box("⏱", time_info, "Cooking time"),
+                info_box("🌡", temp_info, "Temperature"),
+            ],
+            spacing=14,
+        ),
     )
 
     image_container = ft.Container(

@@ -22,7 +22,7 @@ from recipes_page import create_recipes_page
 
 def main(page: ft.Page):
     page.title = "CookFlow"
-    page.window.width = 1400
+    page.window.width = 1600
     page.window.height = 1000
     page.window.resizable = True
     page.theme_mode = ft.ThemeMode.DARK
@@ -36,6 +36,8 @@ def main(page: ft.Page):
         "Pizza 🍕",
         size=36,
         weight=ft.FontWeight.BOLD,
+        no_wrap=False,
+        max_lines=2,
     )
 
     timer_text = ft.Text(
@@ -69,6 +71,21 @@ def main(page: ft.Page):
         fit=ft.ImageFit.COVER,
     )
 
+    autocomplete_list = ft.Column(
+        spacing=6,
+        visible=False,
+    )
+
+    autocomplete_box = ft.Container(
+        width=620,
+        padding=10,
+        border_radius=18,
+        bgcolor="#111827",
+        border=ft.border.all(1, "#1F2937"),
+        visible=False,
+        content=autocomplete_list,
+    )
+
     def start_timer(e):
         timer_manager.start(selected_recipe)
 
@@ -86,6 +103,11 @@ def main(page: ft.Page):
         start_button,
         stop_button,
     )
+
+    def hide_autocomplete():
+        autocomplete_list.controls.clear()
+        autocomplete_list.visible = False
+        autocomplete_box.visible = False
 
     def select_recipe(recipe_key):
         nonlocal selected_recipe
@@ -114,6 +136,76 @@ def main(page: ft.Page):
         start_button.bgcolor = "#FFFFFF"
         stop_button.bgcolor = "#374151"
 
+        hide_autocomplete()
+        page.update()
+
+    def select_autocomplete_recipe(recipe_key):
+        search_input.value = RECIPES[recipe_key].name
+        select_recipe(recipe_key)
+
+    def update_autocomplete(e):
+        user_input = search_input.value.strip().lower()
+
+        autocomplete_list.controls.clear()
+
+        if not user_input:
+            hide_autocomplete()
+            page.update()
+            return
+
+        matches = [
+            recipe_key
+            for recipe_key, recipe in RECIPES.items()
+            if user_input in recipe_key.lower()
+            or user_input in recipe.name.lower()
+        ]
+
+        if not matches:
+            hide_autocomplete()
+            page.update()
+            return
+
+        for recipe_key in matches[:6]:
+            recipe = RECIPES[recipe_key]
+            emoji = get_recipe_emoji(recipe_key)
+
+            if recipe.temperature is not None:
+                details = f"{recipe.cooking_time} min • {recipe.temperature} °C"
+            else:
+                details = f"{recipe.cooking_time} min • No oven"
+
+            autocomplete_list.controls.append(
+                ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.Text(emoji, size=22),
+                            ft.Column(
+                                controls=[
+                                    ft.Text(
+                                        recipe.name,
+                                        size=15,
+                                        weight=ft.FontWeight.BOLD,
+                                    ),
+                                    ft.Text(
+                                        details,
+                                        size=12,
+                                        color="#9CA3AF",
+                                    ),
+                                ],
+                                spacing=2,
+                            ),
+                        ],
+                        spacing=12,
+                    ),
+                    padding=12,
+                    border_radius=14,
+                    bgcolor="#0F172A",
+                    on_click=lambda e, key=recipe_key: select_autocomplete_recipe(key),
+                )
+            )
+
+        autocomplete_list.visible = True
+        autocomplete_box.visible = True
         page.update()
 
     def search_recipe(e):
@@ -123,6 +215,8 @@ def main(page: ft.Page):
     search_input, search_bar = create_search_controls(
         search_recipe
     )
+
+    search_input.on_change = update_autocomplete
 
     headline = ft.Text(
         "What are we cooking today?",
@@ -159,11 +253,12 @@ def main(page: ft.Page):
                 headline,
                 subtitle,
                 search_bar,
+                autocomplete_box,
                 hero_card,
                 suggestions_title,
                 suggestion_cards,
             ],
-            spacing=22,
+            spacing=16,
         ),
     )
 
@@ -174,6 +269,8 @@ def main(page: ft.Page):
         page.update()
 
     def show_recipes_page():
+        hide_autocomplete()
+
         content_area.content = create_recipes_page(
             RECIPES,
             select_recipe,
