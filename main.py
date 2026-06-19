@@ -55,10 +55,7 @@ def main(page: ft.Page):
         color="#9CA3AF",
     )
 
-    timer_ring = TimerRing(
-        timer_text,
-        timer_status,
-    )
+    timer_ring = TimerRing(timer_text, timer_status)
 
     time_info = ft.Text(
         "15 minutes",
@@ -81,7 +78,6 @@ def main(page: ft.Page):
 
     autocomplete_list = ft.Column(
         spacing=6,
-        visible=False,
     )
 
     autocomplete_box = ft.Container(
@@ -115,7 +111,6 @@ def main(page: ft.Page):
 
     def hide_autocomplete():
         autocomplete_list.controls.clear()
-        autocomplete_list.visible = False
         autocomplete_box.visible = False
 
     def select_recipe(recipe_key):
@@ -214,7 +209,6 @@ def main(page: ft.Page):
                 )
             )
 
-        autocomplete_list.visible = True
         autocomplete_box.visible = True
         page.update()
 
@@ -222,10 +216,7 @@ def main(page: ft.Page):
         user_input = search_input.value.strip().lower()
         select_recipe(user_input)
 
-    search_input, search_bar = create_search_controls(
-        search_recipe
-    )
-
+    search_input, search_bar = create_search_controls(search_recipe)
     search_input.on_change = update_autocomplete
 
     headline = ft.Text(
@@ -252,24 +243,32 @@ def main(page: ft.Page):
         timer_ring,
     )
 
-    suggestions_title, suggestion_cards = (
-        create_suggestions(select_recipe)
+    suggestions_title, suggestion_cards = create_suggestions(select_recipe)
+
+    timer_page_content = ft.Column(
+        controls=[
+            headline,
+            subtitle,
+            search_bar,
+            hero_card,
+            suggestions_title,
+            suggestion_cards,
+        ],
+        spacing=16,
     )
 
     timer_page = ft.Container(
         expand=True,
         padding=40,
-        content=ft.Column(
+        content=ft.Stack(
             controls=[
-                headline,
-                subtitle,
-                search_bar,
-                autocomplete_box,
-                hero_card,
-                suggestions_title,
-                suggestion_cards,
+                timer_page_content,
+                ft.Container(
+                    content=autocomplete_box,
+                    top=146,
+                    left=0,
+                ),
             ],
-            spacing=16,
         ),
     )
 
